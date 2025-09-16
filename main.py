@@ -5,24 +5,26 @@ logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
 
 
 
-# def get_macs_from_dhcp_logs(dhcp_logs):
-#     dhcp_macs = []
-#     for log in dhcp_logs:
-#         mac = log["message"].split('MAC')[1].lower().strip()
-#         dhcp_macs.append(mac)
-#     return dhcp_macs
+def get_macs_from_dhcp_logs(dhcp_logs):
+    dhcp_macs = []
+    for log in dhcp_logs:
+        mac = log["message"].split('MAC')[1].lower().strip()
+        dhcp_macs.append(normalize_macs(mac))
+    return dhcp_macs
 
 def normalize_macs(mac):
     return mac.lower().replace("-", ":")
 
-def get_macs_from_dhcp_logs(dhcp_logs):
-    dhcp_macs = []
-    for log in dhcp_logs:
-        match = re.search(r"([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})", log['message'])
-        if match:
-            dhcp_macs.append(normalize_macs(match.group(0)))
-            # logging.warning("Connected MAC: %s", match.group())
-    return dhcp_macs
+# def get_macs_from_dhcp_logs(dhcp_logs):
+#     mac_pattern = re.compile(r"([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})")
+#     dhcp_macs = []
+#     for log in dhcp_logs:
+#         match = mac_pattern.search(log['message'])
+#         if match:
+#             mac = normalize_macs(match.group())
+#             dhcp_macs.append(mac)
+#             # logging.warning("Connected MAC: %s", match.group())
+#     return dhcp_macs
 
 def get_macs_from_assets(assets):
     macs = []
