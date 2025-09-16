@@ -3,13 +3,12 @@ import logging
 
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
 
-
-
 def get_macs_from_dhcp_logs(dhcp_logs):
     dhcp_macs = []
     for log in dhcp_logs:
         mac = log["message"].split('MAC')[1].lower().strip()
         dhcp_macs.append(normalize_macs(mac))
+    # logging.info("Connected MACs: %s", dhcp_macs)
     return dhcp_macs
 
 def normalize_macs(mac):
@@ -31,7 +30,7 @@ def get_macs_from_assets(assets):
     for asset in assets:
         for mac in asset["mac"]:
             macs.append(normalize_macs(mac))
-    logging.info("Authorized MACs: %s", macs)
+    # logging.info("Authorized MACs: %s", macs)
     return macs
 
 def get_unauthorized_macs(authorized_macs, dhcp_macs):
