@@ -3,69 +3,40 @@ import logging
 
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
 
-def get_macs_from_dhcp_logs(dhcp_logs):
-    dhcp_macs = []
-    for log in dhcp_logs:
-        mac = log["message"].split('MAC')[1].lower().strip()
-        dhcp_macs.append(normalize_macs(mac))
-    # logging.info("Connected MACs: %s", dhcp_macs)
-    return dhcp_macs
-
 def normalize_macs(mac):
     return mac.lower().replace("-", ":")
 
-# def get_macs_from_dhcp_logs(dhcp_logs):
-#     mac_pattern = re.compile(r"([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})")
-#     dhcp_macs = []
-#     for log in dhcp_logs:
-#         match = mac_pattern.search(log['message'])
-#         if match:
-#             mac = normalize_macs(match.group())
-#             dhcp_macs.append(mac)
-#             # logging.warning("Connected MAC: %s", match.group())
-#     return dhcp_macs
-
-def get_macs_from_assets(assets):
-    macs = []
-    for asset in assets:
-        for mac in asset["mac"]:
-            macs.append(normalize_macs(mac))
-    # logging.info("Authorized MACs: %s", macs)
-    return macs
-
-def get_unauthorized_macs(authorized_macs, dhcp_macs):
-    unauthorized_macs = []
-    for dhcp_mac in dhcp_macs:
-        if dhcp_mac not in authorized_macs:
-            logging.critical("Unauthorized MAC: %s", dhcp_mac)
-            unauthorized_macs.append(dhcp_mac)
-    return unauthorized_macs
-
 def main():
-
     assets = [
-        {"hostname": "pc1", "mac": ["12:12:12:12:12", "12:45:ff:ab:ab"]},
-        {"hostname": "pc2", "mac": ["b4:6d:83:2b:6a:a6", "aa:bb:cc:dd:ee:ff"]},
-        {"hostname": "pc3", "mac": ["11:22:33:44:55:66"]},
-        {"hostname": "pc4", "mac": ["77:88:99:aa:bb:cc", "dd:ee:ff:00:11:22", "33:44:55:66:77:88", "99:aa:bb:cc:dd:ee"]},
-        {"hostname": "pc4", "mac": ["77:88:99:aa:bb:cc", "dd:ee:ff:00:11:22", "33:44:55:66:77:88", "99:aa:bb:cc:dd:ee"]},
+        {"hostname": "pc1", "mac": ["12:12:12:12:12", "12:45:ff:ab:ab"], "organization.id": "1"},
+        {"hostname": "pc2", "mac": ["b4:6d:83:2b:6a:a6", "aa:bb:cc:dd:ee:ff"], "organization.id": "1"},
+        {"hostname": "pc3", "mac": ["11:22:33:44:55:66"], "organization.id": "2"},
+        {"hostname": "pc4", "mac": ["77:88:99:aa:bb:cc", "dd:ee:ff:00:11:22", "33:44:55:66:77:88", "99:aa:bb:cc:dd:ee"], "organization.id": "3"},
     ]
 
     for i in range(1000):
-        assets.append({"hostname": "pc5", "mac": ["77:88:99:aa:bb:cc", "dd:ee:ff:00:11:22", "33:44:55:66:77:88", "99:aa:bb:cc:dd:ee"]})
+        assets.append({"hostname": "pc4", "mac": ["77:88:99:aa:bb:cc", "dd:ee:ff:00:11:22", "33:44:55:66:77:88", "99:aa:bb:cc:dd:ee"], "organization.id": "3"},)
 
     dhcp_logs = [
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.144 renewed for MAC 33:44:55:66:77:88"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.124 renewed for MAC ff:ee:dd:cc:bb:aa"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.144 renewed for MAC 33:44:55:66:77:88", "organization.id": "2"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.124 renewed for MAC ff:ee:dd:cc:bb:aa", "organization.id": "3"},
     ]
 
-    for i in range(10000000):
-        dhcp_logs.append({"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6"})
+    for log in dhcp_logs:
+        log_mac = normalize_macs(log['message'].split('MAC')[1].strip())
+        log_org_id = log['organization.id']
 
-    authorized_macs = get_macs_from_assets(assets)
-    dhcp_macs = get_macs_from_dhcp_logs(dhcp_logs)
-    get_unauthorized_macs(authorized_macs, dhcp_macs)
+        same_org_assets = []
+        for asset in assets:
+            if asset['organization.id'] == log_org_id:
+                same_org_assets.extend(asset['mac'])
+
+        normalized_macs = {normalize_macs(mac) for mac in same_org_assets}
+
+        if log_mac not in normalized_macs:
+            logging.critical("Unauthorized MAC: %s", log_mac)
+
 
 if __name__ == "__main__":
     main()
