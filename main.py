@@ -18,14 +18,23 @@ def main():
         assets.append({"hostname": "pc4", "mac": ["77:88:99:aa:bb:cc", "dd:ee:ff:00:11:22", "33:44:55:66:77:88", "99:aa:bb:cc:dd:ee"], "organization.id": "3"},)
 
     dhcp_logs = [
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.144 renewed for MAC 33:44:55:66:77:88", "organization.id": "2"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.124 renewed for MAC ff:ee:dd:cc:bb:aa", "organization.id": "3"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.144 renewed for MAC 33:44:55:66:77:88", "organization.id": "2", "sophos.xg.status": "Expire"},
+        {"asdas":"asdasd","message":"Lease IP 192.168.1.124 renewed for MAC ff:ee:dd:cc:bb:aa", "organization.id": "3", "sophos.xg.status": "Release"},
     ]
 
+    renew_macs = set()
+    
     for log in dhcp_logs:
         log_mac = normalize_macs(log['message'].split('MAC')[1].strip())
         log_org_id = log['organization.id']
+        log_status = log['sophos.xg.status']
+
+        if log_status == "Renew":
+            renew_macs.add(log_mac)
 
         same_org_assets = []
         for asset in assets:
@@ -36,6 +45,10 @@ def main():
 
         if log_mac not in normalized_macs:
             logging.critical("Unauthorized MAC: %s", log_mac)
+
+    print("Unique MAC addresses with Renew status:")
+    for mac in sorted(renew_macs):
+        print(f"  {mac}")
 
 
 if __name__ == "__main__":
