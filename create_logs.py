@@ -55,7 +55,7 @@ for i in range(10):
         document=asset
     )
 
-for i in range(100):
+for i in range(10000):
     random_ip = generate_random_ip()
     random_message = generate_random_message()
     random_organization_id = generate_random_organization_id()
