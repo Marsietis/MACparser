@@ -1,0 +1,29 @@
+{
+  "dynamic": "strict",
+  "dynamic_templates": [],
+  "properties": {
+    "hostname": {
+      "eager_global_ordinals": false,
+      "norms": false,
+      "index": true,
+      "store": false,
+      "type": "keyword",
+      "index_options": "docs",
+      "split_queries_on_whitespace": false,
+      "doc_values": true
+    },
+    "organization.id": {
+      "eager_global_ordinals": false,
+      "norms": false,
+      "index": true,
+      "store": false,
+      "type": "keyword",
+      "index_options": "docs",
+      "split_queries_on_whitespace": false,
+      "doc_values": true
+    },
+    "mac": {
+      "type": "keyword"
+    }
+  }
+}

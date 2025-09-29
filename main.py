@@ -1,7 +1,33 @@
 import re
 import logging
+from datetime import datetime
+from elasticsearch import Elasticsearch
 
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
+
+client = Elasticsearch(
+    "https://es01:9200",
+    # api_key="YXVPWGxKa0JQTUQxUTg5aVk5VzY6SVJqcTRPb3ptQVdTNWtzSkZBSk1pZw",
+    ca_certs="./ca.crt",
+    basic_auth=("elastic", "changeme"),
+    )
+
+response = client.search(
+    index="dhcp-logs-stream",
+    query={
+        "range": {
+            "@timestamp": {
+                "gte": "now-24h"
+            }
+        }
+    },
+)
+
+print(response)
+
+print(client.indices.get_data_stream(
+    name="dhcp-logs-stream"
+))
 
 def normalize_macs(mac):
     return mac.lower().replace("-", ":")
@@ -18,12 +44,12 @@ def main():
         assets.append({"hostname": "pc4", "mac": ["77:88:99:aa:bb:cc", "dd:ee:ff:00:11:22", "33:44:55:66:77:88", "99:aa:bb:cc:dd:ee"], "organization.id": "3"},)
 
     dhcp_logs = [
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.144 renewed for MAC 33:44:55:66:77:88", "organization.id": "2", "sophos.xg.status": "Expire"},
-        {"asdas":"asdasd","message":"Lease IP 192.168.1.124 renewed for MAC ff:ee:dd:cc:bb:aa", "organization.id": "3", "sophos.xg.status": "Release"},
+        {"sophos.source.ip":"192.168.1.1","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
+        {"sophos.source.ip":"192.168.1.1","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
+        {"sophos.source.ip":"192.168.1.1","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
+        {"sophos.source.ip":"192.168.1.1","message":"Lease IP 192.168.1.163 renewed for MAC B4:6D:83:2B:6A:A6", "organization.id": "1", "sophos.xg.status": "Renew"},
+        {"sophos.source.ip":"192.168.1.1","message":"Lease IP 192.168.1.144 renewed for MAC 33:44:55:66:77:88", "organization.id": "2", "sophos.xg.status": "Expire"},
+        {"sophos.source.ip":"192.168.1.1","message":"Lease IP 192.168.1.124 renewed for MAC ff:ee:dd:cc:bb:aa", "organization.id": "3", "sophos.xg.status": "Release"},
     ]
 
     renew_macs = set()

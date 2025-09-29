@@ -1,0 +1,56 @@
+{
+  "template": {
+    "settings": {
+      "index": {
+        "lifecycle": {
+          "name": "ilm-assets-policy"
+        },
+        "mode": "logsdb",
+        "routing": {
+          "allocation": {
+            "include": {
+              "_tier_preference": "data_hot"
+            }
+          }
+        },
+        "default_pipeline": "pipeline-add-timestamp",
+        "mapping": {
+          "source": {
+            "mode": "STORED"
+          }
+        },
+        "logsdb": {
+          "add_host_name_field": "true",
+          "sort_on_host_name": "true"
+        }
+      }
+    },
+    "mappings": {
+      "dynamic": "strict",
+      "_data_stream_timestamp": {
+        "enabled": true
+      },
+      "dynamic_templates": [],
+      "properties": {
+        "@timestamp": {
+          "type": "date",
+          "ignore_malformed": false
+        },
+        "hostname": {
+          "type": "keyword"
+        },
+        "mac": {
+          "type": "keyword"
+        },
+        "organization": {
+          "properties": {
+            "id": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    },
+    "aliases": {}
+  }
+}

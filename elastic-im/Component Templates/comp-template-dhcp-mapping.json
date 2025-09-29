@@ -1,0 +1,25 @@
+{
+  "dynamic": "strict",
+  "dynamic_templates": [],
+  "properties": {
+    "sophos.xg.status": {
+      "type": "text"
+    },
+    "sophos.source.ip": {
+      "type": "ip"
+    },
+    "organization.id": {
+      "eager_global_ordinals": false,
+      "norms": false,
+      "index": true,
+      "store": false,
+      "type": "keyword",
+      "index_options": "docs",
+      "split_queries_on_whitespace": false,
+      "doc_values": true
+    },
+    "message": {
+      "type": "text"
+    }
+  }
+}
