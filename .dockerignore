@@ -1,0 +1,58 @@
+# Git
+.git
+.gitignore
+
+# Environment files (these should be mounted or passed as env vars)
+
+!.env.example
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+build
+develop-eggs
+dist
+downloads
+eggs
+.eggs
+lib
+lib64
+parts
+sdist
+var
+wheels
+*.egg-info
+.installed.cfg
+*.egg
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Documentation
+README.md
+*.md
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Logs
+*.log
+
+# Temporary files
+.tmp
+tmp/
+
+# Test files (if any)
+test*
+create_logs.py
+
+# Elasticsearch templates (not needed in runtime container)
+elastic-im/

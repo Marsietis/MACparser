@@ -1,0 +1,4 @@
+services:
+  mac-parser:
+    build: .
+    network_mode: "host"
