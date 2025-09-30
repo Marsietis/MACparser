@@ -1,6 +1,7 @@
 from elasticsearch import Elasticsearch
 import random
 import string
+import time
 
 client = Elasticsearch(
     "https://es01:9200",
@@ -55,7 +56,7 @@ for i in range(10):
         document=asset
     )
 
-for i in range(10000):
+for i in range(100):
     random_ip = generate_random_ip()
     random_message = generate_random_message()
     random_organization_id = generate_random_organization_id()
@@ -72,3 +73,7 @@ for i in range(10000):
         index="dhcp-logs-stream",
         document=dhcp_log
     )
+    
+    print("created log" + str(dhcp_log))
+    
+    # time.sleep(random.randint(0,30))
