@@ -31,6 +31,8 @@ client = Elasticsearch(
 def normalize_macs(mac):
     return mac.lower().replace("-", ":")
 
+mac_pattern = re.compile(r"([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})")
+
 def main():
     
     assets_response = client.search(
@@ -54,7 +56,14 @@ def main():
     
     renew_macs = set()
     for dhcp_log in dhcp_response["hits"]["hits"]:
-        log_mac = normalize_macs(re.search(r"([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})", dhcp_log["_source"]["message"]).group(0))
+        mac_match = mac_pattern.search(dhcp_log["_source"]["message"])
+        
+        if mac_match is None:
+            mac_match = "NO MAC FOUND"
+        else:
+            mac_match = normalize_macs(mac_match.group())
+            
+        log_mac = mac_match
         log_org_id = dhcp_log["_source"]['organization.id']
         log_status = dhcp_log["_source"]['sophos.xg.status']
 
@@ -79,5 +88,4 @@ def main():
 if __name__ == "__main__":
     while True:
         main()
-        print("-----------------------------")
         time.sleep(int(SCAN_PERIOD_SECONDS))
